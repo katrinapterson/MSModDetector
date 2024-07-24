@@ -27,10 +27,13 @@ parser = argparse.ArgumentParser(prog='PROG',
 
 parser.add_argument("-data", type=str, help="""Path to the metadata that contains information about the file names of 
                                                the raw I2MS data, the condition of the samples and which replicate.""")
-parser.add_argument("-mod", type=str, help="Name of the table with all modification types.")
-parser.add_argument("-fasta", type=str, help="Name of the fasta file for protein of interest.")
+parser.add_argument("-mod", type=str, help="table with all modification types.")
+parser.add_argument("-sequence", type=str, help="Sequence for protein of interest.")
 parser.add_argument("-start", type=float, help="Set start of mass range to search for shifts.")
 parser.add_argument("-end", type=float, help="Set end of mass range to search for shifts.")
+parser.add_argument("-isoform", type=str, help="sets the isoform name")
+
+
 parser.add_argument("-wsize", type=float,
                     help="Set window size used to fit the gaussian distribution.")
 parser.add_argument("-ol",  default=0.3, type=float,
@@ -81,13 +84,12 @@ if __name__ == "__main__":
         print("\nFiles do not exist.\n")
         sys.exit()
         
-    protein_entries = utils.read_fasta("../fasta_files/"+args.fasta)
-    protein_sequence = list(protein_entries.values())[0]
+    protein_sequence = args.sequence
     unmodified_species_mass, stddev_isotope_distribution = utils.isotope_distribution_fit_par(protein_sequence, 100)
 
     mass_tolerance_ppm = args.err
 
-    mod = Modifications("../modifications/"+args.mod, protein_sequence)
+    mod = Modifications(args.mod, protein_sequence)
     
     parameter = pd.DataFrame(index=["noise_level", "rescaling_factor", "total_protein_abundance"])
     
@@ -156,10 +158,10 @@ if __name__ == "__main__":
 
             mass_shifts.determine_ptm_patterns(mod, mass_tolerance_ppm, args.obj, args.laps)        
             mass_shifts.add_ptm_patterns_to_table()
-            mass_shifts.ptm_patterns_df.to_csv( "../output/ptm_patterns_table.csv", sep=',', index=False)
+            # mass_shifts.ptm_patterns_df.to_csv( "../output/ptm_patterns_table.csv", sep=',', index=False)
           
-        mass_shifts.save_tables("../output/")
-        parameter.to_csv("../output/parameter.csv", sep=",") 
+        mass_shifts.save_tables("../output/", args.isoform)
+        # parameter.to_csv("../output/parameter.csv", sep=",") 
 
     print(63*"-"+"\n\n")
 #########################################################################################################################

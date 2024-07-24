@@ -62,14 +62,14 @@ def isotope_distribution_fit_par(protein_sequence, isotope_pattern_resolution):
         return 0, 0
 
 
-def read_fasta(fasta_file_name):
-    entries = []
-    fasta_file = pyopenms.FASTAFile()
-    fasta_file.load(fasta_file_name, entries)
-    protein_sequences = {}
-    for e in entries:
-        protein_sequences[e.identifier] = e.sequence
-    return protein_sequences
+# def read_fasta(fasta_file_name):
+#     entries = []
+#     fasta_file = pyopenms.FASTAFile()
+#     fasta_file.load(fasta_file_name, entries)
+#     protein_sequences = {}
+#     for e in entries:
+#         protein_sequences[e.identifier] = e.sequence
+#     return protein_sequences
 
 
 def get_theoretical_isotope_distribution(sequence, isotope_pattern_resolution, modus="coarse"):

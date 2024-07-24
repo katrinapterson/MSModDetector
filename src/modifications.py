@@ -9,6 +9,7 @@ Created on Tue Mar 9 2021
 import pyopenms
 import pandas as pd
 import numpy as np
+from io import StringIO
 
 class Modifications(object):
     """
@@ -18,8 +19,8 @@ class Modifications(object):
     If the mass caused by the PTM is not given in the table it will be taken from the pyopenms class.
     """
     
-    def __init__(self, modfications_file_name, aa_sequence_str):
-        self.modifications_table =  pd.read_csv(modfications_file_name, sep=';')
+    def __init__(self, modfication_string, aa_sequence_str):
+        self.modifications_table =  pd.read_csv(StringIO(modfication_string), sep=';', lineterminator='*')
         self.modifications = self.modifications_table["ptm_name"].values.tolist()
         self.ptm_ids = self.modifications_table["ptm_id"].values.tolist()
         self.upper_bounds = self.set_upper_bounds(aa_sequence_str)

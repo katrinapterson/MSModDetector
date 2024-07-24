@@ -10,6 +10,7 @@ import pandas as pd
 import numpy as np
 from linear_program_cvxopt import LinearProgramCVXOPT
 import utils
+import os.path
 
 
 class MassShifts(object): 
@@ -80,16 +81,19 @@ class MassShifts(object):
         self.mass_shifts = self.identified_masses_df['mass shift'].values
 
 
-    def save_tables(self, output_path_name):
-        regex_score_cols =  "mass shift"+"|"+self.pvalue_col_name+"|"+self.chi_score_col_name
+    def save_tables(self, output_path_name, isoform):
+        # regex_score_cols =  "mass shift"+"|"+self.pvalue_col_name+"|"+self.chi_score_col_name
         regex_mass_shift_cols = "mass shift"+"|"+"PTM pattern"+"|"+self.avg_mass_col_name+ "|"+\
                                 self.mass_col_name+"|"+self.intensity_col_name+"|"+self.abundance_col_name
 
+
         masses_df = self.identified_masses_df.filter(regex=regex_mass_shift_cols)
-        score_df = self.identified_masses_df.filter(regex=regex_score_cols)
-                
-        masses_df.sort_index(axis=1).to_csv(output_path_name+"mass_shifts.csv", sep=',', index=False) 
-        score_df.to_csv(output_path_name+"scores.csv", sep=',', index=False)
+        # score_df = self.identified_masses_df.filter(regex=regex_score_cols)
+        masses_df.insert(0, 'Isoform', isoform)
+
+        masses_df.sort_index(axis=1).to_csv(output_path_name+"mass_shifts.csv", mode='a', sep=',', index=False, header=not os.path.exists(output_path_name+"mass_shifts.csv"))     
+        
+        # score_df.to_csv(output_path_name+"scores.csv", sep=',', index=False)
 
 
     def determine_ptm_patterns(self, modifications, mass_tolerance_ppm, objective_fun, laps_run_lp, msg_progress=True):
